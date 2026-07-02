@@ -5,6 +5,8 @@ then comment the summary on the PR, surface findings in the code-scanning (Secur
 tab, and optionally block the merge. Runs entirely on your own runner; no source
 leaves the machine and nothing phones home.
 
+![The CodeDelta report comment on a pull request — churn summary, AI audit and agent-scan findings, all checks passed](https://codedelta.app/shots/pr-flow.png)
+
 ```yaml
 # .github/workflows/codedelta.yml
 name: CodeDelta
@@ -22,19 +24,22 @@ jobs:
       - uses: actions/checkout@v4
         with: { fetch-depth: 0 }   # full history so churn (base..head) works
       - uses: code-delta-app/action@v1
-        with:
-          license: ${{ secrets.CODEDELTA_LICENSE }}
 ```
 
-That's the minimum. The engine downloads itself; the only thing you provide is a
-licence (see below). See [example-workflow.yml](example-workflow.yml) for a fully
-configured workflow with gating and an AI Bill of Materials.
+That's the whole setup. **Free and fully unlocked during the beta (to 31 July 2026)
+— no license, no secrets, no signup.** The engine downloads itself. See
+[example-workflow.yml](example-workflow.yml) for a fully configured workflow with
+gating and an AI Bill of Materials.
 
-## Setup (two minutes)
+## Setup (one minute)
 
-1. **Add the workflow** above to `.github/workflows/codedelta.yml`.
-2. **Add one secret** — `CODEDELTA_LICENSE` = base64 of your `codedelta.lic`
-   (`base64 -i codedelta.lic | pbcopy`), stored as a repository secret.
+1. **Add the workflow** above to `.github/workflows/codedelta.yml`. Done.
+
+To run past the beta — or to use your own license sooner — add one secret:
+`CODEDELTA_LICENSE` = base64 of your `codedelta.lic`
+(`base64 -i codedelta.lic | pbcopy`), then pass it as the `license` input. It
+overrides the built-in beta license automatically. Get a license at
+[codedelta.app](https://codedelta.app/download.html#register).
 
 No install on anyone's machine; it all runs on the GitHub runner.
 
@@ -42,7 +47,7 @@ No install on anyone's machine; it all runs on the GitHub runner.
 
 | Input | Default | Description |
 |-------|---------|-------------|
-| `license` | — (required) | base64 of `codedelta.lic`, or a path to it. Use a repo secret. |
+| `license` | built-in beta license | Optional. base64 of `codedelta.lic`, or a path to it (use a repo secret). Overrides the free beta license (valid to 31 July 2026). |
 | `engine-url` | latest release | URL of the CodeDelta Linux bundle (`.tar.gz`). Defaults to the latest published release; override to pin a version or self-host. |
 | `path` | `.` | Directory to scan. |
 | `mode` | `churn` | `churn` (churn only — the default) / `both` (churn + AI audit + agent) / `ai_audit` (AI + agent, no churn) / `ai` / `agent`. |
@@ -67,7 +72,7 @@ No install on anyone's machine; it all runs on the GitHub runner.
 
 ## Notes
 
-- The licence is verified locally on the runner; nothing leaves the machine. AI
+- The license is verified locally on the runner; nothing leaves the machine. AI
   signals are pointers for review, not verdicts.
 - Generate a baseline once and commit it:
   `codedelta-gui scan . --mode both --write-baseline codedelta-baseline.json -q`

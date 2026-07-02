@@ -1,0 +1,32 @@
+# Example: drop this in .github/workflows/codedelta.yml in your own repository.
+# Requires two repo secrets:
+#   CODEDELTA_LICENSE  — base64 of your codedelta.lic  (base64 -i codedelta.lic | pbcopy)
+#   (engine URL can be public; the licence is what gates the engine)
+name: CodeDelta
+on:
+  pull_request:
+
+permissions:
+  contents: read
+  pull-requests: write     # to post the summary comment
+  security-events: write   # to upload SARIF to the code-scanning tab
+
+jobs:
+  codedelta:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0     # full history so --git base..head works
+      - uses: code-delta-app/action@v1
+        with:
+          license: ${{ secrets.CODEDELTA_LICENSE }}
+          # engine-url defaults to the latest published release — override only to pin a version
+          mode: both
+          threshold: "50"
+          baseline: codedelta-baseline.json   # optional; omit to report all findings
+          fail-on-new: "true"                 # block the merge on new findings
+          gate: "true"                        # also block on AI-governance policy
+                                              #   (egress to CN/RU/KP/IR or exec-on-model)
+          # gate-policy: codedelta-policy.json  # or supply your own rules
+          bom: ai-bom.json                    # optional: write an AI Bill of Materials

@@ -1,0 +1,161 @@
+name: "CodeDelta scan"
+description: "Measure churn and flag AI-generated / AI-agent code on every pull request."
+branding:
+  icon: "activity"
+  color: "orange"
+
+inputs:
+  license:
+    description: "CodeDelta licence (base64 of codedelta.lic, or a path). OPTIONAL during the public beta — omit it and the bundled beta licence is used (valid to 2026-07-31). Supply your own to override it."
+    required: false
+  engine-url:
+    description: "URL of the CodeDelta Linux bundle (.tar.gz) to download and run.
+      Defaults to the latest published release; override to pin a version or self-host."
+    required: false
+    default: "https://github.com/code-delta-app/releases/releases/latest/download/codedelta-linux-full.tar.gz"
+  path:
+    description: "Directory to scan (snapshot mode when no PR base is available)."
+    required: false
+    default: "."
+  mode:
+    description: "Scan mode (same nomenclature as the GUI). DEFAULT 'churn' = churn
+      only — the headless default (~90% of use). 'both' = churn + AI audit + agent
+      (everything). 'ai_audit' = AI audit + agent (no churn). 'ai' / 'agent' = those
+      alone."
+    required: false
+    default: "churn"
+  threshold:
+    description: "AI sensitivity 0-100 (affects rating cut-offs only)."
+    required: false
+    default: "50"
+  baseline:
+    description: "Path to a committed baseline file (codedelta-baseline.json). Optional."
+    required: false
+    default: ""
+  fail-on-new:
+    description: "Fail the job (exit 3) if there are new findings vs the baseline."
+    required: false
+    default: "false"
+  comment:
+    description: "Post the summary as a pull-request comment."
+    required: false
+    default: "true"
+  sarif:
+    description: "Upload findings as SARIF to the code-scanning tab."
+    required: false
+    default: "true"
+  gate:
+    description: "Fail the job on the default AI-governance policy (egress to a non-allied jurisdiction CN/RU/KP/IR, or the rogue exec-on-model pattern). Needs an agent scan: mode agent/both/ai_audit."
+    required: false
+    default: "false"
+  gate-policy:
+    description: "Path to a custom gate policy JSON (deny_jurisdictions / allow_providers / deny_flags / max_risk). Implies gate."
+    required: false
+    default: ""
+  bom:
+    description: "Write an AI Bill of Materials to this path (e.g. ai-bom.json). Optional."
+    required: false
+    default: ""
+  bom-format:
+    description: "AI-BOM format: native (default) or cyclonedx."
+    required: false
+    default: "native"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Fetch CodeDelta engine
+      shell: bash
+      run: |
+        mkdir -p "$RUNNER_TEMP/codedelta"
+        curl -fsSL "${{ inputs.engine-url }}" -o "$RUNNER_TEMP/cd.tar.gz"
+        tar -xzf "$RUNNER_TEMP/cd.tar.gz" -C "$RUNNER_TEMP/codedelta" --strip-components=1
+        echo "CD_DIR=$RUNNER_TEMP/codedelta" >> "$GITHUB_ENV"
+
+    - name: Install licence
+      shell: bash
+      run: |
+        LIC="${{ inputs.license }}"
+        if [ -z "$LIC" ]; then
+          echo "No licence supplied - using the CodeDelta public beta licence (valid to 2026-07-31)."
+          echo "ewogICJ0eXBlIjogInRpbWVkIiwKICAiY3VzdG9tZXIiOiAiQ29kZURlbHRhIHB1YmxpYyBiZXRhIiwKICAiaXNzdWVkIjogIjIwMjYtMDctMDIiLAogICJleHBpcnkiOiAiMjAyNi0wNy0zMSIsCiAgImhvc3QiOiBudWxsLAogICJzZWF0cyI6ICJ1bmxpbWl0ZWQiLAogICJjb2RlZGVsdGFfdmVyc2lvbiI6ICIxLjguMiIsCiAgInNpZ25hdHVyZSI6ICJaL0NlMFdDbDc2RG1nUzNDTy9yY0lhNmpidDVRVlR5T3lHWGdZTk05dW0wNTUzUi9FVTZxSis4S3FwN2gwdG1rcktpc0J6clFMVkNPcTFIUnJ5d1pHWmlKSkU4ZmNQNmpmNTEzZUFqZ2o3dnpPSW9UR0hadFc5SFlnUkVjTnJ1ZHVIWForTmF6cUxFUUQzTndMNWY3dWt1bFp0V3FMVzRjYzlXMGxuUjVTbWlwYTZGU0d1eHFUTVA4dWpXVDBvUGM2UFFpQ3ZlSm1NMzdjZ0cwSHloSVVHQ2poQkdmZDJpRStFaUY1N1haYUx0aVBhQmpRUnFJL3MrNklQTDVncTdPRmp1a2RVMW1IVzUrd1dRMVg2a04zMUNpblV0cXNqNFlYSEczU2YrTCtMUHQ3R21RQzFoNDM3OGFmSzl4WUxOZnlmM1g0WXN3SXVNejJZSVljZ3liVXo1VWZnM3I1b2U0RUUrck55Z1hkeWdrUzdPOU51YllEZXN6RG96NllOYUUvYVY1YmVRNVJURUVHeWdYa3BFSEZuM1NGb1RVc3VaS0tKMTRhSzVpMFpwTHBHdGZ6ODFaWUd0OTZ4SHVlMzdlL3hvZjFVWTczcjYwL3QzMFFmR09zYVNrVXFPaXg3QkVaeExMa1hFelN0UEZZdG1qVE9GWkNONzFxL3pRMGxYZiIKfQ==" | base64 -d > "$RUNNER_TEMP/codedelta.lic"
+        elif [ -f "$LIC" ]; then
+          cp "$LIC" "$RUNNER_TEMP/codedelta.lic"
+        else
+          echo "$LIC" | base64 -d > "$RUNNER_TEMP/codedelta.lic"
+        fi
+        echo "CODEDELTA_LICENSE=$RUNNER_TEMP/codedelta.lic" >> "$GITHUB_ENV"
+
+    - name: Run CodeDelta
+      id: scan
+      shell: bash
+      run: |
+        # CHURN needs two versions. On a pull request, materialise the base ref as
+        # a second working tree and pass BOTH paths to scan (new old) so it measures
+        # CHG/DEL/ADD. Off a PR (e.g. a push) there's no base → snapshot only.
+        # NOTE: the calling workflow must use actions/checkout with fetch-depth: 0.
+        TARGETS=("${{ inputs.path }}")
+        if [ -n "$GITHUB_BASE_REF" ]; then
+          git fetch --no-tags origin "$GITHUB_BASE_REF" || true
+          if git worktree add "$RUNNER_TEMP/base" FETCH_HEAD; then
+            TARGETS=("${{ inputs.path }}" "$RUNNER_TEMP/base/${{ inputs.path }}")
+          fi
+        fi
+        ARGS=(scan "${TARGETS[@]}" --mode "${{ inputs.mode }}" \
+              --threshold "${{ inputs.threshold }}" --out-dir "$RUNNER_TEMP/cd-out" \
+              --html --json --csv)
+        [ "${{ inputs.sarif }}" = "true" ]   && ARGS+=(--sarif)
+        [ "${{ inputs.comment }}" = "true" ] && ARGS+=(--pr-comment)
+        if [ -n "${{ inputs.baseline }}" ]; then
+          ARGS+=(--baseline "${{ inputs.baseline }}")
+          [ "${{ inputs.fail-on-new }}" = "true" ] && ARGS+=(--fail-on-new)
+        fi
+        [ "${{ inputs.gate }}" = "true" ] && ARGS+=(--gate)
+        [ -n "${{ inputs.gate-policy }}" ] && ARGS+=(--gate-policy "${{ inputs.gate-policy }}")
+        if [ -n "${{ inputs.bom }}" ]; then
+          ARGS+=(--bom "${{ inputs.bom }}" --bom-format "${{ inputs.bom-format }}")
+        fi
+        set +e
+        # codedelta-gui is the frozen (PyInstaller) binary — run it directly, NOT
+        # via python3. (Confirmed by the live end-to-end test, 22 Jun.)
+        "$CD_DIR/codedelta-gui" "${ARGS[@]}"
+        echo "rc=$?" >> "$GITHUB_OUTPUT"
+
+    - name: Upload SARIF
+      if: ${{ inputs.sarif == 'true' }}
+      uses: github/codeql-action/upload-sarif@v3
+      with:
+        sarif_file: ${{ runner.temp }}/cd-out
+
+    - name: Post PR comment
+      if: ${{ inputs.comment == 'true' && github.event_name == 'pull_request' }}
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const fs = require('fs');
+          const dir = `${process.env.RUNNER_TEMP}/cd-out`;
+          const md = fs.readdirSync(dir).find(f => f.endsWith('_pr_comment.md'));
+          if (!md) return;
+          const body = fs.readFileSync(`${dir}/${md}`, 'utf8');
+          const marker = '<!-- codedelta -->';
+          const { data: comments } = await github.rest.issues.listComments({
+            owner: context.repo.owner, repo: context.repo.repo,
+            issue_number: context.issue.number });
+          const existing = comments.find(c => c.body.includes(marker));
+          const payload = `${marker}\n${body}`;
+          if (existing) {
+            await github.rest.issues.updateComment({ owner: context.repo.owner,
+              repo: context.repo.repo, comment_id: existing.id, body: payload });
+          } else {
+            await github.rest.issues.createComment({ owner: context.repo.owner,
+              repo: context.repo.repo, issue_number: context.issue.number, body: payload });
+          }
+
+    - name: Enforce result
+      shell: bash
+      run: |
+        rc="${{ steps.scan.outputs.rc }}"
+        if [ "$rc" != "0" ]; then
+          echo "CodeDelta exited $rc (3 = new findings / threshold / policy-gate breach; 2 = usage error)."
+          exit "$rc"
+        fi

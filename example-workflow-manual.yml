@@ -1,0 +1,40 @@
+# Example: run CodeDelta WITHOUT tying it to pull requests.
+# Drop this in .github/workflows/codedelta-manual.yml in your own repository.
+#
+# Two ways it runs:
+#   • workflow_dispatch — a "Run workflow" button appears in the repo's Actions tab
+#   • schedule          — a nightly run for trend tracking
+#
+# Same one secret as the PR workflow:
+#   CODEDELTA_LICENSE — base64 of your codedelta.lic  (base64 -i codedelta.lic | pbcopy)
+name: CodeDelta (manual / nightly)
+on:
+  workflow_dispatch:          # manual "Run workflow" button in the Actions tab
+  schedule:
+    - cron: "0 2 * * *"       # 02:00 UTC daily — adjust or remove
+
+permissions:
+  contents: read
+
+jobs:
+  codedelta:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0        # full history so --git base..head works
+      - uses: code-delta-app/action@v1
+        with:
+          license: ${{ secrets.CODEDELTA_LICENSE }}
+          mode: both
+          # No fail-on-new / gate here — this is a report & trend run, not a merge gate.
+      - name: Save reports as a downloadable artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: codedelta-reports
+          path: |
+            **/*.html
+            **/*.csv
+            **/ai-bom.json
+          if-no-files-found: ignore

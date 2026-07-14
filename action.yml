@@ -6,7 +6,7 @@ branding:
 
 inputs:
   license:
-    description: "CodeDelta licence (base64 of codedelta.lic, or a path). OPTIONAL during the public beta — omit it and the bundled beta licence is used (valid to 2026-07-31). Supply your own to override it."
+    description: "CodeDelta licence (base64 of codedelta.lic, or a path). OPTIONAL during the public beta — omit it and the bundled beta licence is used (valid to 2026-08-31). Supply your own to override it."
     required: false
   engine-url:
     description: "URL of the CodeDelta Linux bundle (.tar.gz) to download and run.
@@ -18,12 +18,14 @@ inputs:
     required: false
     default: "."
   mode:
-    description: "Scan mode (same nomenclature as the GUI). DEFAULT 'churn' = churn
-      only — the headless default (~90% of use). 'both' = churn + AI audit + agent
-      (everything). 'ai_audit' = AI audit + agent (no churn). 'ai' / 'agent' = those
-      alone."
+    description: "Scan mode (same nomenclature as the GUI). DEFAULT 'both' = churn +
+      AI audit + agent — everything the PR comment and Security tab show (they need
+      an AI or agent scan; the old 'churn' default broke the zero-config path, found
+      14 Jul 2026). 'churn' = churn only (valid with sarif/comment off; the engine
+      and batch CLI outside this Action still default to churn). 'ai_audit' = AI
+      audit + agent (no churn). 'ai' / 'agent' = those alone."
     required: false
-    default: "churn"
+    default: "both"
   threshold:
     description: "AI sensitivity 0-100 (affects rating cut-offs only)."
     required: false
@@ -77,8 +79,8 @@ runs:
       run: |
         LIC="${{ inputs.license }}"
         if [ -z "$LIC" ]; then
-          echo "No licence supplied - using the CodeDelta public beta licence (valid to 2026-07-31)."
-          echo "ewogICJ0eXBlIjogInRpbWVkIiwKICAiY3VzdG9tZXIiOiAiQ29kZURlbHRhIHB1YmxpYyBiZXRhIiwKICAiaXNzdWVkIjogIjIwMjYtMDctMDIiLAogICJleHBpcnkiOiAiMjAyNi0wNy0zMSIsCiAgImhvc3QiOiBudWxsLAogICJzZWF0cyI6ICJ1bmxpbWl0ZWQiLAogICJjb2RlZGVsdGFfdmVyc2lvbiI6ICIxLjguMiIsCiAgInNpZ25hdHVyZSI6ICJaL0NlMFdDbDc2RG1nUzNDTy9yY0lhNmpidDVRVlR5T3lHWGdZTk05dW0wNTUzUi9FVTZxSis4S3FwN2gwdG1rcktpc0J6clFMVkNPcTFIUnJ5d1pHWmlKSkU4ZmNQNmpmNTEzZUFqZ2o3dnpPSW9UR0hadFc5SFlnUkVjTnJ1ZHVIWForTmF6cUxFUUQzTndMNWY3dWt1bFp0V3FMVzRjYzlXMGxuUjVTbWlwYTZGU0d1eHFUTVA4dWpXVDBvUGM2UFFpQ3ZlSm1NMzdjZ0cwSHloSVVHQ2poQkdmZDJpRStFaUY1N1haYUx0aVBhQmpRUnFJL3MrNklQTDVncTdPRmp1a2RVMW1IVzUrd1dRMVg2a04zMUNpblV0cXNqNFlYSEczU2YrTCtMUHQ3R21RQzFoNDM3OGFmSzl4WUxOZnlmM1g0WXN3SXVNejJZSVljZ3liVXo1VWZnM3I1b2U0RUUrck55Z1hkeWdrUzdPOU51YllEZXN6RG96NllOYUUvYVY1YmVRNVJURUVHeWdYa3BFSEZuM1NGb1RVc3VaS0tKMTRhSzVpMFpwTHBHdGZ6ODFaWUd0OTZ4SHVlMzdlL3hvZjFVWTczcjYwL3QzMFFmR09zYVNrVXFPaXg3QkVaeExMa1hFelN0UEZZdG1qVE9GWkNONzFxL3pRMGxYZiIKfQ==" | base64 -d > "$RUNNER_TEMP/codedelta.lic"
+          echo "No licence supplied - using the CodeDelta public beta licence (valid to 2026-08-31)."
+          echo "ewogICJ0eXBlIjogInRpbWVkIiwKICAiY3VzdG9tZXIiOiAiQ29kZURlbHRhIHB1YmxpYyBiZXRhIiwKICAiaXNzdWVkIjogIjIwMjYtMDctMTQiLAogICJleHBpcnkiOiAiMjAyNi0wOC0zMSIsCiAgImhvc3QiOiBudWxsLAogICJzZWF0cyI6ICJ1bmxpbWl0ZWQiLAogICJjb2RlZGVsdGFfdmVyc2lvbiI6ICIxLjguNiIsCiAgInNpZ25hdHVyZSI6ICJLRGJDWWxhbndzUEhCN0g0cTRFL3p5WXdkWlZldnpuaGtnZjdpWHQwOHNQcG9MU2NVTTdreTZ1QVJhZlErdzF5MVZyOUlvOVdGM0g2ZnhEejJxNmd3dkRmcTQ1YS9URUZOM1JIblpqYnJQTXUzRGQzZS85WnNVREZjZUoxbU1zckNXbzJUQktuYWVIUTZ3NGR0U1hneTZiQTk1czRqS0ZVd1BoWW9TaE15SG1iNXR1b1VzK2JHRHl0cm5QQmxQU3lwSkFvNmtBcVlJUVVOQXY2S0VHWER6VjdLSGw1Y0tLQzlLclYwSGlxVmdqL1lyd3FxTWx2ODBGdWJ2eU5xTHBheUJybzl5SHdvSkpZenoybUNrcm4rR05NMEQxUHVKbG1jYWF5L3IzSzNRK1VkQ1hCc3pPNlp1Q0tYRXl6SW5tRmxEU2c4aG5iMUlHKzJIdkROQktyT1c3TkxPWDhmOUpKZHlqb2lYUVc1d1RYdSswQU5EQTUxWWUxeDQwVXlCMnFrQWlRVllRZjZzaXJSVWtjU2lBWitZUzA1WHkyeVArL2xHSTA5Z0hTR1FPNEFvbEJOaFBZVjVWSGlYQjdZQzI0bmJXa0xWOFlhS0FyTEZEelpmQjByVG1ZR3JnWSs3U1NnWndXU29GUWxOL2NxV2dEejBXd0VQWGs5bHNsdVBOZyIKfQ==" | base64 -d > "$RUNNER_TEMP/codedelta.lic"
         elif [ -f "$LIC" ]; then
           cp "$LIC" "$RUNNER_TEMP/codedelta.lic"
         else
@@ -121,12 +123,12 @@ runs:
         "$CD_DIR/codedelta-gui" "${ARGS[@]}"
         echo "rc=$?" >> "$GITHUB_OUTPUT"
 
-    - name: Upload SARIF
-      if: ${{ inputs.sarif == 'true' }}
-      uses: github/codeql-action/upload-sarif@v3
-      with:
-        sarif_file: ${{ runner.temp }}/cd-out
-
+    # PR comment FIRST — it is the universal output and must never be lost to a
+    # SARIF failure. SARIF upload is best-effort (continue-on-error): the Security
+    # tab needs a public repo or GitHub Advanced Security, and many customers have
+    # neither — per the documented posture, "the PR comment works regardless".
+    # (Order + guard added 14 Jul 2026: a private-repo customer previously lost the
+    # comment AND the whole run when the SARIF upload was refused.)
     - name: Post PR comment
       if: ${{ inputs.comment == 'true' && github.event_name == 'pull_request' }}
       uses: actions/github-script@v7
@@ -150,6 +152,13 @@ runs:
             await github.rest.issues.createComment({ owner: context.repo.owner,
               repo: context.repo.repo, issue_number: context.issue.number, body: payload });
           }
+
+    - name: Upload SARIF (best-effort — needs public repo or Advanced Security)
+      if: ${{ inputs.sarif == 'true' }}
+      continue-on-error: true
+      uses: github/codeql-action/upload-sarif@v3
+      with:
+        sarif_file: ${{ runner.temp }}/cd-out
 
     - name: Enforce result
       shell: bash

@@ -3,7 +3,8 @@
 Measure code churn and flag AI-generated / AI-agent code on every pull request —
 then comment the summary on the PR, surface findings in the code-scanning (Security)
 tab, and optionally block the merge. Runs entirely on your own runner; no source
-leaves the machine and nothing phones home.
+leaves the machine and nothing phones home. Setup is two lines in a workflow
+file — the theoretical minimum of effort.
 
 ![The CodeDelta report comment on a pull request — churn summary, AI audit and agent-scan findings, all checks passed](https://codedelta.app/shots/pr-flow.png)
 
@@ -26,7 +27,7 @@ jobs:
       - uses: code-delta-app/action@v1
 ```
 
-That's the whole setup. **Free and fully unlocked during the beta (to 31 July 2026)
+That's the whole setup. **Free and fully unlocked during the beta (to 31 August 2026)
 — no license, no secrets, no signup.** The engine downloads itself. See
 [example-workflow.yml](example-workflow.yml) for a fully configured workflow with
 gating and an AI Bill of Materials.
@@ -47,7 +48,7 @@ No install on anyone's machine; it all runs on the GitHub runner.
 
 | Input | Default | Description |
 |-------|---------|-------------|
-| `license` | built-in beta license | Optional. base64 of `codedelta.lic`, or a path to it (use a repo secret). Overrides the free beta license (valid to 31 July 2026). |
+| `license` | built-in beta license | Optional. base64 of `codedelta.lic`, or a path to it (use a repo secret). Overrides the free beta license (valid to 31 August 2026). |
 | `engine-url` | latest release | URL of the CodeDelta Linux bundle (`.tar.gz`). Defaults to the latest published release; override to pin a version or self-host. |
 | `path` | `.` | Directory to scan. |
 | `mode` | `churn` | `churn` (churn only — the default) / `both` (churn + AI audit + agent) / `ai_audit` (AI + agent, no churn) / `ai` / `agent`. |

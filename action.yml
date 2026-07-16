@@ -18,14 +18,14 @@ inputs:
     required: false
     default: "."
   mode:
-    description: "Scan mode (same nomenclature as the GUI). DEFAULT 'churn_agent' =
-      churn + Agent Scan — the two core instruments (changed 17 Jul 2026; the ML AI
-      audit is opt-in, not default). 'both' = churn + AI audit + agent (everything).
-      'churn' = churn only (valid with sarif/comment off; the engine and batch CLI
-      outside this Action still default to churn). 'ai_audit' = AI audit + agent
-      (no churn). 'ai' / 'agent' = those alone."
+    description: "Scan mode (same nomenclature as the GUI). DEFAULT 'both' = churn +
+      AI audit + agent — everything the PR comment and Security tab show (they need
+      an AI or agent scan; the old 'churn' default broke the zero-config path, found
+      14 Jul 2026). 'churn' = churn only (valid with sarif/comment off; the engine
+      and batch CLI outside this Action still default to churn). 'ai_audit' = AI
+      audit + agent (no churn). 'ai' / 'agent' = those alone."
     required: false
-    default: "churn_agent"
+    default: "both"
   threshold:
     description: "AI sensitivity 0-100 (affects rating cut-offs only)."
     required: false
@@ -47,7 +47,7 @@ inputs:
     required: false
     default: "true"
   gate:
-    description: "Fail the job on the default AI-governance policy (egress to a non-allied jurisdiction CN/RU/KP/IR, or the rogue exec-on-model pattern). Needs an agent scan: mode agent/both/ai_audit/churn_agent (the default)."
+    description: "Fail the job on the default AI-governance policy (egress to a non-allied jurisdiction CN/RU/KP/IR, or the rogue exec-on-model pattern). Needs an agent scan: mode agent/both/ai_audit."
     required: false
     default: "false"
   gate-policy:

@@ -22,7 +22,7 @@ jobs:
         with:
           license: ${{ secrets.CODEDELTA_LICENSE }}
           # engine-url defaults to the latest published release — override only to pin a version
-          mode: churn_agent   # the default: churn + Agent Scan (add the ML audit with `both`)
+          mode: both
           threshold: "50"
           baseline: codedelta-baseline.json   # optional; omit to report all findings
           fail-on-new: "true"                 # block the merge on new findings

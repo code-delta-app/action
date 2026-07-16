@@ -51,13 +51,13 @@ No install on anyone's machine; it all runs on the GitHub runner.
 | `license` | built-in beta license | Optional. base64 of `codedelta.lic`, or a path to it (use a repo secret). Overrides the free beta license (valid to 31 August 2026). |
 | `engine-url` | latest release | URL of the CodeDelta Linux bundle (`.tar.gz`). Defaults to the latest published release; override to pin a version or self-host. |
 | `path` | `.` | Directory to scan. |
-| `mode` | `churn_agent` | `churn_agent` (churn + Agent Scan — the default) / `both` (adds the ML AI audit) / `churn` (churn only) / `ai_audit` (AI + agent, no churn) / `ai` / `agent`. |
+| `mode` | `churn` | `churn` (churn only — the default) / `both` (churn + AI audit + agent) / `ai_audit` (AI + agent, no churn) / `ai` / `agent`. |
 | `threshold` | `50` | AI sensitivity 0–100 (affects rating cut-offs only). |
 | `baseline` | — | Path to a committed `codedelta-baseline.json`. |
 | `fail-on-new` | `false` | Fail the job if there are new findings vs the baseline. |
 | `comment` | `true` | Post the summary as a PR comment (updates in place). |
 | `sarif` | `true` | Upload findings as SARIF to the code-scanning tab. |
-| `gate` | `false` | Fail the job on the default AI-governance policy: egress to a non-allied jurisdiction (CN/RU/KP/IR) or the rogue exec-on-model pattern. Needs an agent scan (`mode: agent`/`both`/`ai_audit`/`churn_agent`, i.e. any mode but plain `churn`/`ai`). |
+| `gate` | `false` | Fail the job on the default AI-governance policy: egress to a non-allied jurisdiction (CN/RU/KP/IR) or the rogue exec-on-model pattern. Needs an agent scan (`mode: agent`/`both`/`ai_audit`). |
 | `gate-policy` | — | Path to a custom gate policy JSON (`deny_jurisdictions` / `allow_providers` / `deny_flags` / `max_risk`). Implies `gate`. |
 | `bom` | — | Write an AI Bill of Materials to this path. |
 | `bom-format` | `native` | `native` or `cyclonedx` (CycloneDX 1.6). |

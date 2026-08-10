@@ -1,0 +1,29 @@
+<svg viewBox="0 0 960 555" xmlns="http://www.w3.org/2000/svg" font-family="Helvetica,Arial,sans-serif">
+  <rect width="960" height="555" fill="#0d1117"/>
+  <text x="480" y="30" text-anchor="middle" fill="#7d8590" font-size="12" letter-spacing="1.5">REAL OUTPUT — THE COMMENT CODEDELTA POSTED ON THE PUBLIC DEMO PR (github.com/code-delta-app/demo · PR #2)</text>
+
+  <rect x="40" y="50" width="880" height="465" rx="8" fill="#161b22" stroke="#30363d"/>
+  <circle cx="78" cy="88" r="16" fill="#21262d" stroke="#30363d"/>
+  <text x="78" y="94" text-anchor="middle" fill="#7d8590" font-size="15">&#9881;</text>
+  <text x="106" y="86" fill="#e6edf3" font-size="14" font-weight="bold">github-actions<tspan fill="#7d8590" font-weight="normal">[bot]</tspan></text>
+  <text x="106" y="102" fill="#7d8590" font-size="12">commented on pull request #2 · default mode: churn + Agent Scan</text>
+
+  <g font-size="14.5" fill="#e6edf3">
+    <text x="70" y="150" font-size="17" font-weight="bold" opacity="0">CodeDelta report<animate attributeName="opacity" to="1" dur="0.4s" begin="0.6s" fill="freeze"/></text>
+
+    <text x="70" y="190" opacity="0"><tspan font-weight="bold">Churn:</tspan> 96 logical statements (+6 / −0 / Δ90); REP_CHURN 0.06<animate attributeName="opacity" to="1" dur="0.4s" begin="1.4s" fill="freeze"/></text>
+
+    <text x="70" y="222" opacity="0"><tspan font-weight="bold" fill="#7ddba3">TRUE_CHURN: 6 authored</tspan> — the other 90 (94% of the total) came from<animate attributeName="opacity" to="1" dur="0.4s" begin="2.2s" fill="freeze"/></text>
+    <text x="70" y="244" opacity="0">1 generated file (lockfiles, minified bundles, codegen output)<animate attributeName="opacity" to="1" dur="0.4s" begin="2.2s" fill="freeze"/></text>
+
+    <text x="70" y="286" opacity="0"><tspan font-weight="bold">Agent scan:</tspan> 0 CRITICAL · <tspan fill="#ffb38a">3 HIGH</tspan> · 8 ELEVATED<animate attributeName="opacity" to="1" dur="0.4s" begin="3.1s" fill="freeze"/></text>
+
+    <text x="70" y="318" opacity="0"><tspan font-weight="bold">Governance:</tspan> 4 file(s) send data to foreign-hosted models (<tspan font-weight="bold" fill="#ffb38a">4 non-allied</tspan>);<animate attributeName="opacity" to="1" dur="0.4s" begin="3.9s" fill="freeze"/></text>
+    <text x="70" y="340" opacity="0">1 file(s) call AI inside a loop (cost risk)<animate attributeName="opacity" to="1" dur="0.4s" begin="3.9s" fill="freeze"/></text>
+
+    <text x="70" y="382" opacity="0"><tspan font-weight="bold">Agent infrastructure:</tspan> 6 artifact(s) in the tree — <tspan font-weight="bold" fill="#f85149">2 tier-3</tspan> (rogue residue / credentials):<animate attributeName="opacity" to="1" dur="0.4s" begin="4.8s" fill="freeze"/></text>
+    <text x="70" y="406" font-family="Menlo,Consolas,monospace" font-size="12.5" fill="#7d8590" opacity="0">agent-scan-demo/openclaw/gateway.auth.token · agent-scan-demo/openclaw<animate attributeName="opacity" to="1" dur="0.4s" begin="4.8s" fill="freeze"/></text>
+
+    <text x="70" y="450" font-size="12.5" fill="#7d8590" font-style="italic" opacity="0">AI signals are pointers for review, not verdicts. Full report attached to this run.<animate attributeName="opacity" to="1" dur="0.4s" begin="5.7s" fill="freeze"/></text>
+  </g>
+</svg>

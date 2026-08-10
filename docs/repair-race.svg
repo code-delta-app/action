@@ -1,0 +1,44 @@
+<svg viewBox="0 0 960 435" xmlns="http://www.w3.org/2000/svg" font-family="Helvetica,Arial,sans-serif">
+  <rect width="960" height="435" fill="#14151c"/>
+  <text x="480" y="24" text-anchor="middle" fill="#8a8fa3" font-size="11" letter-spacing="2">FINDINGS FROM THE PUBLISHED STUDY — NOT TOOL OUTPUT</text>
+  <text x="480" y="52" text-anchor="middle" fill="#f7f5f0" font-size="24" font-weight="bold">Who makes inline edits?*</text>
+  <text x="480" y="76" text-anchor="middle" fill="#8a8fa3" font-size="14">an inline edit = a change inside an existing line of code — not an addition, not a deletion</text>
+
+  <!-- human lane -->
+  <text x="60" y="135" fill="#f7f5f0" font-size="17" font-weight="bold">Hand-maintained code</text>
+  <text x="60" y="156" fill="#8a8fa3" font-size="13">curl · PostgreSQL · Express — measured REWORK ≈ 17% (paper C)</text>
+  <rect x="60" y="170" width="840" height="34" rx="6" fill="#232532"/>
+  <rect x="60" y="170" height="34" rx="6" fill="#4a9e6b" width="0">
+    <animate attributeName="width" from="0" to="140" dur="3s" begin="0.5s" fill="freeze" calcMode="spline" keySplines="0.2 0 0.4 1"/>
+  </rect>
+  <text x="218" y="192" fill="#7ddba3" font-size="16" font-weight="bold" opacity="0">
+    17 in every 100 changes
+    <animate attributeName="opacity" from="0" to="1" dur="0.5s" begin="3.2s" fill="freeze"/>
+  </text>
+
+  <!-- agent lane -->
+  <text x="60" y="255" fill="#f7f5f0" font-size="17" font-weight="bold">One agent-built codebase, measured</text>
+  <text x="60" y="276" fill="#8a8fa3" font-size="13">single subject; 65.9% of its commits carry AI-agent trailers — measured REWORK 0.19%</text>
+  <rect x="60" y="290" width="840" height="34" rx="6" fill="#232532"/>
+  <rect x="60" y="290" height="34" rx="6" fill="#c8441a" width="0">
+    <animate attributeName="width" from="0" to="2.5" dur="3s" begin="0.5s" fill="freeze"/>
+  </rect>
+  <text x="78" y="312" fill="#ffb38a" font-size="16" font-weight="bold" opacity="0">
+    fewer than 1 in 100
+    <animate attributeName="opacity" from="0" to="1" dur="0.5s" begin="3.2s" fill="freeze"/>
+  </text>
+
+  <!-- punchline -->
+  <text x="480" y="364" text-anchor="middle" fill="#f7f5f0" font-size="19" opacity="0">
+    Humans make inline edits. AI deletes and regenerates.
+    <animate attributeName="opacity" from="0" to="1" dur="0.8s" begin="4s" fill="freeze"/>
+  </text>
+  <text x="480" y="392" text-anchor="middle" fill="#8a8fa3" font-size="12" opacity="0">
+    * inline edit = CHG_LLOC, a changed logical statement as reported by CodeDelta — shown as CHG_LLOC ÷ CRN_LLOC
+    <animate attributeName="opacity" from="0" to="1" dur="0.8s" begin="4.6s" fill="freeze"/>
+  </text>
+  <text x="480" y="412" text-anchor="middle" fill="#8a8fa3" font-size="12" opacity="0">
+    paper C · codedelta.app/paper-repchurn.html · re-runnable from published commit hashes
+    <animate attributeName="opacity" from="0" to="1" dur="0.8s" begin="4.6s" fill="freeze"/>
+  </text>
+</svg>

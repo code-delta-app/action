@@ -6,7 +6,9 @@ tab, and optionally block the merge. Runs entirely on your own runner; no source
 leaves the machine and nothing phones home. Setup is two lines in a workflow
 file — the theoretical minimum of effort.
 
-![The CodeDelta report comment on a pull request — churn summary, AI audit and agent-scan findings, all checks passed](https://codedelta.app/shots/pr-flow.png)
+![CodeDelta's actual PR comment posting itself — verbatim from the public demo PR, default mode](docs/pr-comment-live.svg)
+
+<sub>Real output: the comment above is character-for-character what CodeDelta posted on [the public demo PR](https://github.com/code-delta-app/demo/pull/2), running the default mode (churn + Agent Scan).</sub>
 
 ```yaml
 # .github/workflows/codedelta.yml

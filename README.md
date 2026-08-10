@@ -10,6 +10,10 @@ file — the theoretical minimum of effort.
 
 <sub>Real output: the comment above is character-for-character what CodeDelta posted on [the public demo PR](https://github.com/code-delta-app/demo/pull/2), running the default mode (churn + Agent Scan).</sub>
 
+![Who makes inline edits? Hand-maintained projects: 17 in every 100 changes. One agent-built codebase: fewer than 1 in 100.](docs/repair-race.svg)
+
+<sub>The data behind the Action: inline edit = CHG_LLOC, a changed logical statement — study and reproduction hashes at [codedelta.app/paper-repchurn.html](https://codedelta.app/paper-repchurn.html).</sub>
+
 ```yaml
 # .github/workflows/codedelta.yml
 name: CodeDelta

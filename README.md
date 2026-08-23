@@ -33,7 +33,7 @@ jobs:
       - uses: code-delta-app/action@v1
 ```
 
-That's the whole setup. **Free and fully unlocked during the beta (to 31 August 2026)
+That's the whole setup. **Free and fully unlocked during the beta (to 31 October 2026)
 — no license, no secrets, no signup.** The engine downloads itself. See
 [example-workflow.yml](example-workflow.yml) for a fully configured workflow with
 gating and an AI Bill of Materials.
@@ -54,7 +54,7 @@ No install on anyone's machine; it all runs on the GitHub runner.
 
 | Input | Default | Description |
 |-------|---------|-------------|
-| `license` | built-in beta license | Optional. base64 of `codedelta.lic`, or a path to it (use a repo secret). Overrides the free beta license (valid to 31 August 2026). |
+| `license` | built-in beta license | Optional. base64 of `codedelta.lic`, or a path to it (use a repo secret). Overrides the free beta license (valid to 31 October 2026). |
 | `engine-url` | latest release | URL of the CodeDelta Linux bundle (`.tar.gz`). Defaults to the latest published release; override to pin a version or self-host. |
 | `path` | `.` | Directory to scan. |
 | `mode` | `churn_agent` | `churn_agent` (churn + Agent Scan — the default) / `both` (adds the ML AI audit) / `churn` (churn only) / `ai_audit` (AI + agent, no churn) / `ai` / `agent`. |

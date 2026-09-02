@@ -98,10 +98,29 @@ runs:
         # NOTE: the calling workflow must use actions/checkout with fetch-depth: 0.
         TARGETS=("${{ inputs.path }}")
         if [ -n "$GITHUB_BASE_REF" ]; then
-          git fetch --no-tags origin "$GITHUB_BASE_REF" || true
-          if git worktree add "$RUNNER_TEMP/base" FETCH_HEAD; then
-            TARGETS=("${{ inputs.path }}" "$RUNNER_TEMP/base/${{ inputs.path }}")
+          # The base tree comes from THIS fetch's commit, never from a stale
+          # FETCH_HEAD: when the fetch failed, FETCH_HEAD still held the PR's
+          # own ref and the engine compared the PR against itself — 0 churn,
+          # "no build files changed", no error (audit G7, 2 Sep 2026).
+          if git fetch --no-tags origin "$GITHUB_BASE_REF"; then
+            BASE_SHA=$(git rev-parse FETCH_HEAD)
+            HEAD_SHA=$(git rev-parse HEAD)
+            if [ "$BASE_SHA" = "$HEAD_SHA" ]; then
+              echo "::warning::base $GITHUB_BASE_REF resolves to the same commit as HEAD — churn skipped (nothing to compare)."
+            elif git worktree add "$RUNNER_TEMP/base" "$BASE_SHA"; then
+              TARGETS=("${{ inputs.path }}" "$RUNNER_TEMP/base/${{ inputs.path }}")
+            else
+              echo "::warning::could not check out base $GITHUB_BASE_REF ($BASE_SHA) — churn skipped, snapshot scan only."
+            fi
+          else
+            echo "::warning::could not fetch base branch $GITHUB_BASE_REF — churn skipped, snapshot scan only. (Private repo with persist-credentials: false? Give the checkout a token.)"
           fi
+        fi
+        # fail-on-new needs a baseline; silently ignoring the flag let a gate that
+        # a customer believed was on pass forever (audit G8, 2 Sep 2026).
+        if [ "${{ inputs.fail-on-new }}" = "true" ] && [ -z "${{ inputs.baseline }}" ]; then
+          echo "::error::fail-on-new is true but no baseline was given — set 'baseline:' (write one with --write-baseline) or turn fail-on-new off."
+          exit 2
         fi
         ARGS=(scan "${TARGETS[@]}" --mode "${{ inputs.mode }}" \
               --threshold "${{ inputs.threshold }}" --out-dir "$RUNNER_TEMP/cd-out" \

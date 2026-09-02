@@ -129,8 +129,20 @@ runs:
     # neither — per the documented posture, "the PR comment works regardless".
     # (Order + guard added 14 Jul 2026: a private-repo customer previously lost the
     # comment AND the whole run when the SARIF upload was refused.)
+    # The comment goes to the JOB SUMMARY first (works with any token), then to
+    # the PR best-effort. On a pull request from a FORK the default GITHUB_TOKEN
+    # is read-only, so createComment returns 403; before 2 Sep 2026 that failed
+    # the step and the whole job went red on a clean outside contribution.
+    - name: Publish the report to the job summary
+      if: ${{ inputs.comment == 'true' }}
+      shell: bash
+      run: |
+        md=$(ls "$RUNNER_TEMP"/cd-out/*_pr_comment.md 2>/dev/null | head -1)
+        if [ -n "$md" ]; then cat "$md" >> "$GITHUB_STEP_SUMMARY"; fi
+
     - name: Post PR comment
       if: ${{ inputs.comment == 'true' && github.event_name == 'pull_request' }}
+      continue-on-error: true
       uses: actions/github-script@v7
       with:
         script: |
@@ -140,9 +152,11 @@ runs:
           if (!md) return;
           const body = fs.readFileSync(`${dir}/${md}`, 'utf8');
           const marker = '<!-- codedelta -->';
-          const { data: comments } = await github.rest.issues.listComments({
+          // Every page (default page size is 30 — a busy PR hid our own
+          // comment and a new one was posted on each push).
+          const comments = await github.paginate(github.rest.issues.listComments, {
             owner: context.repo.owner, repo: context.repo.repo,
-            issue_number: context.issue.number });
+            issue_number: context.issue.number, per_page: 100 });
           const existing = comments.find(c => c.body.includes(marker));
           const payload = `${marker}\n${body}`;
           if (existing) {

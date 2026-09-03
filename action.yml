@@ -97,6 +97,11 @@ runs:
         # CHG/DEL/ADD. Off a PR (e.g. a push) there's no base → snapshot only.
         # NOTE: the calling workflow must use actions/checkout with fetch-depth: 0.
         TARGETS=("${{ inputs.path }}")
+        # The gate's RULES (baseline + policy) are read from the BASE branch on a
+        # PR, never from the PR's own checkout — a PR could otherwise edit the
+        # baseline to list its own findings, or empty the policy (audit G2;
+        # ruled by Lance 3 Sep 2026). Off a PR there is no base: the checkout is used.
+        RULES_ROOT="."
         if [ -n "$GITHUB_BASE_REF" ]; then
           # The base tree comes from THIS fetch's commit, never from a stale
           # FETCH_HEAD: when the fetch failed, FETCH_HEAD still held the PR's
@@ -109,6 +114,7 @@ runs:
               echo "::warning::base $GITHUB_BASE_REF resolves to the same commit as HEAD — churn skipped (nothing to compare)."
             elif git worktree add "$RUNNER_TEMP/base" "$BASE_SHA"; then
               TARGETS=("${{ inputs.path }}" "$RUNNER_TEMP/base/${{ inputs.path }}")
+              RULES_ROOT="$RUNNER_TEMP/base"
             else
               echo "::warning::could not check out base $GITHUB_BASE_REF ($BASE_SHA) — churn skipped, snapshot scan only."
             fi
@@ -128,11 +134,21 @@ runs:
         [ "${{ inputs.sarif }}" = "true" ]   && ARGS+=(--sarif)
         [ "${{ inputs.comment }}" = "true" ] && ARGS+=(--pr-comment)
         if [ -n "${{ inputs.baseline }}" ]; then
-          ARGS+=(--baseline "${{ inputs.baseline }}")
+          if [ ! -f "$RULES_ROOT/${{ inputs.baseline }}" ]; then
+            echo "::error::baseline '${{ inputs.baseline }}' is not on the base branch ($RULES_ROOT). The gate reads its rules from the base, not from the PR: land the baseline on the base branch first."
+            exit 2
+          fi
+          ARGS+=(--baseline "$RULES_ROOT/${{ inputs.baseline }}")
           [ "${{ inputs.fail-on-new }}" = "true" ] && ARGS+=(--fail-on-new)
         fi
         [ "${{ inputs.gate }}" = "true" ] && ARGS+=(--gate)
-        [ -n "${{ inputs.gate-policy }}" ] && ARGS+=(--gate-policy "${{ inputs.gate-policy }}")
+        if [ -n "${{ inputs.gate-policy }}" ]; then
+          if [ ! -f "$RULES_ROOT/${{ inputs.gate-policy }}" ]; then
+            echo "::error::gate-policy '${{ inputs.gate-policy }}' is not on the base branch ($RULES_ROOT). Land the policy on the base branch first."
+            exit 2
+          fi
+          ARGS+=(--gate-policy "$RULES_ROOT/${{ inputs.gate-policy }}")
+        fi
         if [ -n "${{ inputs.bom }}" ]; then
           ARGS+=(--bom "${{ inputs.bom }}" --bom-format "${{ inputs.bom-format }}")
         fi
@@ -176,7 +192,10 @@ runs:
           const comments = await github.paginate(github.rest.issues.listComments, {
             owner: context.repo.owner, repo: context.repo.repo,
             issue_number: context.issue.number, per_page: 100 });
-          const existing = comments.find(c => c.body.includes(marker));
+          // Only OUR comment: the marker alone was spoofable — any commenter
+          // could paste it and become the comment we overwrite (audit G12).
+          const existing = comments.find(c => c.body.startsWith(marker) &&
+            c.user && c.user.type === 'Bot' && c.user.login === 'github-actions[bot]');
           const payload = `${marker}\n${body}`;
           if (existing) {
             await github.rest.issues.updateComment({ owner: context.repo.owner,

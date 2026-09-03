@@ -75,7 +75,9 @@ No install on anyone's machine; it all runs on the GitHub runner.
   code scanning, keyed to the flagged files. *(Public repos, or private repos with
   GitHub Advanced Security.)*
 - **Merge gate** — with `baseline` + `fail-on-new`, only files that got *worse* than
-  the accepted baseline fail the check (exit code 3).
+  the accepted baseline fail the check (exit code 3). On a pull request the baseline
+  and any `gate-policy` file are read from the **base branch**, never from the PR: a
+  change to either must land on the base branch first, in its own PR.
 
 ## Notes
 

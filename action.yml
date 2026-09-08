@@ -6,7 +6,7 @@ branding:
 
 inputs:
   license:
-    description: "CodeDelta licence (base64 of codedelta.lic, or a path). OPTIONAL during the public beta — omit it and the bundled beta licence is used (valid to 2026-10-31). Supply your own to override it."
+    description: "CodeDelta licence (base64 of codedelta.lic, or a path). OPTIONAL — omit it and the built-in evaluation licence is used (valid to 2026-10-31). Set it to run past that date or to use your own licence."
     required: false
   engine-url:
     description: "URL of the CodeDelta Linux bundle (.tar.gz) to download and run.
@@ -79,7 +79,7 @@ runs:
       run: |
         LIC="${{ inputs.license }}"
         if [ -z "$LIC" ]; then
-          echo "No licence supplied - using the CodeDelta public beta licence (valid to 2026-10-31)."
+          echo "No licence supplied - using the built-in evaluation licence (valid to 2026-10-31)."
           echo "ewogICJjb2RlZGVsdGFfdmVyc2lvbiI6ICIxLjkuNSIsCiAgImV4cGlyeSI6ICIyMDI2LTEwLTMxIiwKICAiaG9zdCI6IG51bGwsCiAgImlzc3VlZCI6ICIyMDI2LTA4LTIzIiwKICAibGljZW5zZV92ZXJzaW9uIjogIjEuMCIsCiAgIm5vdGUiOiAiMzEgT2N0b2JlciAyMDI2IGV2YWx1YXRpb24gbGljZW5zZSIsCiAgInNlYXRzIjogInVubGltaXRlZCIsCiAgInNpZ25hdHVyZSI6ICJZQ3dlb0wvUTlxd1FXWjFZRXRYdUg4bkVsdU05TEUvL09NVFN2U1l0K2RtVEdSVEJDaU5yOEVuMk1FOVhUdG1YU29ZdFhyWjU4UE1DQ24wMlAyRU9OVmxCTUkxWDl6VHJ3UzZjY3E4Y2VoS1U5YTRpQ2gwbmtGTjcwR29kOGNKZXZmN2JHREdPalQ5QzBoZ1pKRXB6NGY3NG56WnZUeGlDd3dybzc0aDNCU1dib0JFUEEyVjFLTGZBeFJhM1RwRlhUdUVWek8yaXRoejA0dDJobGk3dVpsRFl1MmhjcXhhTjFwNG5JalovZDVLMTE4M0FBTXV0LzVuMDVLNFdEQkJPRlZqdjc0NWoySGxVdXpOUnpWbE1JTzJwNGJySUNGYjdkVmNUOUJmMEM5dnRjTTBWdUYrcTltT01OOXB2Ukl0UXAyVVlia3hpTjBHR21QSTZsdm5JcG5TME1qRmVhZGdETlFBL0t6ZlVkdk8vbmN5VDJXdUQ1QW1ZZGFsc09QVXo0M0NuY0RNaUlxT2hzQnkzOXd4bHVHang5Y3RBeEd1NXdqdW5QNGdKSllISDdjQitCWGN1UjBZZTJ6MDVXKzdqUE9la0lLUkdxOUNtTHNRQmFhZUNiZVhteXVMQlRuUURlVllreWVJQmZhMk1IdllMd2hRNTFZckIyQUhZTmtYWiIsCiAgInR5cGUiOiAidGltZWQiCn0K" | base64 -d > "$RUNNER_TEMP/codedelta.lic"
         elif [ -f "$LIC" ]; then
           cp "$LIC" "$RUNNER_TEMP/codedelta.lic"

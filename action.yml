@@ -100,7 +100,7 @@ runs:
         # The gate's RULES (baseline + policy) are read from the BASE branch on a
         # PR, never from the PR's own checkout — a PR could otherwise edit the
         # baseline to list its own findings, or empty the policy (audit G2;
-        # ruled by Lance 3 Sep 2026). Off a PR there is no base: the checkout is used.
+        # ruled 3 Sep 2026). Off a PR there is no base: the checkout is used.
         RULES_ROOT="."
         if [ -n "$GITHUB_BASE_REF" ]; then
           # The base tree comes from THIS fetch's commit, never from a stale
@@ -122,13 +122,30 @@ runs:
             echo "::warning::could not fetch base branch $GITHUB_BASE_REF — churn skipped, snapshot scan only. (Private repo with persist-credentials: false? Give the checkout a token.)"
           fi
         fi
+        # No base tree (a push event, or the fetch/checkout failed): churn has
+        # nothing to compare, and the CLI now refuses a churn mode without an old
+        # tree (G15). Degrade to the snapshot counterpart and say so (review 3 Sep 2026).
+        MODE="${{ inputs.mode }}"
+        if [ "${#TARGETS[@]}" -eq 1 ]; then
+          case "$MODE" in
+            churn)       echo "::warning::no base tree: mode churn has nothing to compare — running an agent scan only"; MODE=agent ;;
+            churn_agent) echo "::warning::no base tree: churn skipped — agent scan only"; MODE=agent ;;
+            both)        echo "::warning::no base tree: churn skipped — AI audit + agent scan"; MODE=ai_audit ;;
+          esac
+          # On a PR the rules must come from the base branch (audit G2). Without the
+          # base they would come from the PR's own checkout: refuse rather than judge.
+          if [ -n "$GITHUB_BASE_REF" ] && { [ -n "${{ inputs.baseline }}" ] || [ -n "${{ inputs.gate-policy }}" ]; }; then
+            echo "::error::the base branch $GITHUB_BASE_REF could not be checked out, so the baseline / gate policy cannot be read from it; refusing to judge this PR against rules from its own checkout."
+            exit 2
+          fi
+        fi
         # fail-on-new needs a baseline; silently ignoring the flag let a gate that
         # a customer believed was on pass forever (audit G8, 2 Sep 2026).
         if [ "${{ inputs.fail-on-new }}" = "true" ] && [ -z "${{ inputs.baseline }}" ]; then
           echo "::error::fail-on-new is true but no baseline was given — set 'baseline:' (write one with --write-baseline) or turn fail-on-new off."
           exit 2
         fi
-        ARGS=(scan "${TARGETS[@]}" --mode "${{ inputs.mode }}" \
+        ARGS=(scan "${TARGETS[@]}" --mode "$MODE" \
               --threshold "${{ inputs.threshold }}" --out-dir "$RUNNER_TEMP/cd-out" \
               --html --json --csv)
         [ "${{ inputs.sarif }}" = "true" ]   && ARGS+=(--sarif)
@@ -172,7 +189,10 @@ runs:
       if: ${{ inputs.comment == 'true' }}
       shell: bash
       run: |
-        md=$(ls "$RUNNER_TEMP"/cd-out/*_pr_comment.md 2>/dev/null | head -1)
+        # composite steps run under `bash -eo pipefail`: with no comment file the
+        # `ls | head` pipeline failed and killed this step, and the "Enforce
+        # result" step that explains the exit code never ran (review 3 Sep 2026)
+        md=$(ls "$RUNNER_TEMP"/cd-out/*_pr_comment.md 2>/dev/null | head -1 || true)
         if [ -n "$md" ]; then cat "$md" >> "$GITHUB_STEP_SUMMARY"; fi
 
     - name: Post PR comment

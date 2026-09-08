@@ -85,4 +85,4 @@ No install on anyone's machine; it all runs on the GitHub runner.
   signals are pointers for review, not verdicts.
 - Generate a baseline once and commit it:
   `codedelta-gui scan . --mode both --write-baseline codedelta-baseline.json -q`
-- Default `mode: churn_agent` (churn + Agent Scan, no ML) is the ~90% case. `mode: churn` is pure measurement — it still posts the PR comment (churn totals, build-file alert); SARIF is skipped because churn has no findings to report. Switch to. Switch to `both` to add the ML AI audit.
+- Default `mode: churn_agent` (churn + Agent Scan, no ML) is the ~90% case. `mode: churn` is pure measurement — it still posts the PR comment (churn totals, build-file alert); SARIF is skipped because churn has no findings to report. Switch to `both` to add the ML AI audit.

@@ -4,7 +4,7 @@ Measure code churn and flag AI-generated / AI-agent code on every pull request �
 then comment the summary on the PR, surface findings in the code-scanning (Security)
 tab, and optionally block the merge. Runs entirely on your own runner; no source
 leaves the machine and nothing phones home. Setup is two lines in a workflow
-file — the theoretical minimum of effort.
+file.
 
 ![CodeDelta's actual PR comment posting itself — verbatim from the public demo PR, default mode](docs/pr-comment-live.svg)
 

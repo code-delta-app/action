@@ -6,7 +6,7 @@ branding:
 
 inputs:
   license:
-    description: "CodeDelta licence (base64 of codedelta.lic, or a path). OPTIONAL — omit it and the built-in evaluation licence is used (valid to 2026-10-31). Set it to run past that date or to use your own licence."
+    description: "CodeDelta licence (base64 of codedelta.lic, or a path). OPTIONAL — omit it and the built-in evaluation licence is used (valid to 2026-12-31). Set it to run past that date or to use your own licence."
     required: false
   engine-url:
     description: "URL of the CodeDelta Linux bundle (.tar.gz) to download and run.
@@ -79,8 +79,8 @@ runs:
       run: |
         LIC="${{ inputs.license }}"
         if [ -z "$LIC" ]; then
-          echo "No licence supplied - using the built-in evaluation licence (valid to 2026-10-31)."
-          echo "ewogICJjb2RlZGVsdGFfdmVyc2lvbiI6ICIxLjkuNSIsCiAgImV4cGlyeSI6ICIyMDI2LTEwLTMxIiwKICAiaG9zdCI6IG51bGwsCiAgImlzc3VlZCI6ICIyMDI2LTA4LTIzIiwKICAibGljZW5zZV92ZXJzaW9uIjogIjEuMCIsCiAgIm5vdGUiOiAiMzEgT2N0b2JlciAyMDI2IGV2YWx1YXRpb24gbGljZW5zZSIsCiAgInNlYXRzIjogInVubGltaXRlZCIsCiAgInNpZ25hdHVyZSI6ICJZQ3dlb0wvUTlxd1FXWjFZRXRYdUg4bkVsdU05TEUvL09NVFN2U1l0K2RtVEdSVEJDaU5yOEVuMk1FOVhUdG1YU29ZdFhyWjU4UE1DQ24wMlAyRU9OVmxCTUkxWDl6VHJ3UzZjY3E4Y2VoS1U5YTRpQ2gwbmtGTjcwR29kOGNKZXZmN2JHREdPalQ5QzBoZ1pKRXB6NGY3NG56WnZUeGlDd3dybzc0aDNCU1dib0JFUEEyVjFLTGZBeFJhM1RwRlhUdUVWek8yaXRoejA0dDJobGk3dVpsRFl1MmhjcXhhTjFwNG5JalovZDVLMTE4M0FBTXV0LzVuMDVLNFdEQkJPRlZqdjc0NWoySGxVdXpOUnpWbE1JTzJwNGJySUNGYjdkVmNUOUJmMEM5dnRjTTBWdUYrcTltT01OOXB2Ukl0UXAyVVlia3hpTjBHR21QSTZsdm5JcG5TME1qRmVhZGdETlFBL0t6ZlVkdk8vbmN5VDJXdUQ1QW1ZZGFsc09QVXo0M0NuY0RNaUlxT2hzQnkzOXd4bHVHang5Y3RBeEd1NXdqdW5QNGdKSllISDdjQitCWGN1UjBZZTJ6MDVXKzdqUE9la0lLUkdxOUNtTHNRQmFhZUNiZVhteXVMQlRuUURlVllreWVJQmZhMk1IdllMd2hRNTFZckIyQUhZTmtYWiIsCiAgInR5cGUiOiAidGltZWQiCn0K" | base64 -d > "$RUNNER_TEMP/codedelta.lic"
+          echo "No licence supplied - using the built-in evaluation licence (valid to 2026-12-31)."
+          echo "ewogICJjb2RlZGVsdGFfdmVyc2lvbiI6ICIxLjkuNSIsCiAgImV4cGlyeSI6ICIyMDI2LTEyLTMxIiwKICAiaG9zdCI6IG51bGwsCiAgImlzc3VlZCI6ICIyMDI2LTEwLTA2IiwKICAibGljZW5zZV92ZXJzaW9uIjogIjEuMCIsCiAgIm5vdGUiOiAiIiwKICAic2VhdHMiOiAidW5saW1pdGVkIiwKICAic2lnbmF0dXJlIjogIlE4c1lIN3k3aGI1aktPN0lQVUxTbWd5SVpPVThDQzdVc0t6U3dSYlEyOFVCWTNrZStGRWk0V09WU1VIbXYveUF3L0ZmVHVFSWF2SmhhTlRON0NwSGt1VUZuTVErVUFkLzBOR1YwNUZvSDR1THl3bC9XNXdnYmpsUndGMGVDem9BQmFmTXFPSW0xV0JNL2l3R2VWR3c0M2FpVFJKcnVxL3RDYitydUVQaG1XVTNyeGhaU1o3a2M4cnBrRXdzNWxGTGZ6UWlvdGJhbXdDZWJWbkdiYmpnZkFUdU1LQ0xyTlh5eC9jdjQ2czJENkJCQk1iL21PWnhod1ltcVltdjBmZUtIbmk5SXZubkdoUlErVkp0UUoxbGhkTEdHRm5XM0g0OGtRWWk1MlArbnY5a0pOdWRvYzlzVktFcU5XSWxZbFF6SkZ5aWZQVUJLTm13dTRwT3hwR2FJa3plUjNwN1hENW1BNnJ5dXlIbmlSM2lWak5TOGNiazVDaGxLbTU5MkJjZjFVcFJwUjdNNXhvdDhTMFlRbFl0bGFvK0N2Mi9lWUJIWDlUeTVSTW9uYjYvY0lEYlc5VmZCc3pnNWxEaWMyOGluTVlVdGJlWmEzcWo3SnhLTnRCajFUaGtlUVBRMi80QmNPaWZETURHWDJtVytHdzk3b1BlUFRtd21VeUkxNE01IiwKICAidHlwZSI6ICJ0aW1lZCIKfQo=" | base64 -d > "$RUNNER_TEMP/codedelta.lic"
         elif [ -f "$LIC" ]; then
           cp "$LIC" "$RUNNER_TEMP/codedelta.lic"
         else

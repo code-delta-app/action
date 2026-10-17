@@ -38,6 +38,10 @@ inputs:
     description: "Fail the job (exit 3) if there are new findings vs the baseline."
     required: false
     default: "false"
+  post-review-churn:
+    description: "Add a line to the PR comment: how much the PR changed after review started, over how many reviewed revisions. true (default) or false."
+    required: false
+    default: "true"
   comment:
     description: "Post the summary as a pull-request comment."
     required: false
@@ -174,6 +178,19 @@ runs:
         # via python3. (Confirmed by the live end-to-end test, 22 Jun.)
         "$CD_DIR/codedelta-gui" "${ARGS[@]}"
         echo "rc=$?" >> "$GITHUB_OUTPUT"
+
+    # Post-review churn (17 Oct 2026): how much the PR changed after review started, over how many reviewed revisions.
+    # One line appended to the PR comment; reporting only — the script never fails the job.
+    - name: Post-review churn
+      if: ${{ inputs.comment == 'true' && inputs.post-review-churn == 'true' && github.event_name == 'pull_request' }}
+      continue-on-error: true
+      shell: bash
+      env:
+        GH_TOKEN: ${{ github.token }}
+        CD_PATH: ${{ inputs.path }}
+      run: |
+        CD_COMMENT=$(ls "$RUNNER_TEMP"/cd-out/*_pr_comment.md 2>/dev/null | head -1 || true) \
+          bash "${{ github.action_path }}/review_churn.sh" || true
 
     # PR comment FIRST — it is the universal output and must never be lost to a
     # SARIF failure. SARIF upload is best-effort (continue-on-error): the Security

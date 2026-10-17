@@ -62,6 +62,7 @@ No install on anyone's machine; it all runs on the GitHub runner.
 | `baseline` | — | Path to a committed `codedelta-baseline.json`. |
 | `fail-on-new` | `false` | Fail the job if there are new findings vs the baseline. |
 | `comment` | `true` | Post the summary as a PR comment (updates in place). |
+| `post-review-churn` | `true` | Add a line to the PR comment: how much the PR changed after review started, over how many reviewed revisions. Counts only the PR's own files. |
 | `sarif` | `true` | Upload findings as SARIF to the code-scanning tab. |
 | `gate` | `false` | Fail the job on the default AI-governance policy: egress to a non-allied jurisdiction (CN/RU/KP/IR) or the rogue exec-on-model pattern. Needs an agent scan (`mode: agent`/`both`/`ai_audit`/`churn_agent`, i.e. any mode but plain `churn`/`ai`). |
 | `gate-policy` | — | Path to a custom gate policy JSON (`deny_jurisdictions` / `allow_providers` / `deny_flags` / `max_risk`). Implies `gate`. |

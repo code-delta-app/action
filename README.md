@@ -26,9 +26,9 @@ permissions:
 
 jobs:
   codedelta:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with: { fetch-depth: 0 }   # full history so churn (base..head) works
       - uses: code-delta-app/action@v1
 ```

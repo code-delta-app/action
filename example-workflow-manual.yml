@@ -18,9 +18,9 @@ permissions:
 
 jobs:
   codedelta:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0        # full history so --git base..head works
       - uses: code-delta-app/action@v1
@@ -30,7 +30,7 @@ jobs:
           # No fail-on-new / gate here — this is a report & trend run, not a merge gate.
       - name: Save reports as a downloadable artifact
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: codedelta-reports
           path: |

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# review_churn.sh — PR post-review churn for the CodeDelta Action (Lance, 15-17 Oct 2026: the one Waydev measure
-# CodeDelta lacked). How much the pull request changed AFTER review started, and over how many reviewed revisions.
+# review_churn.sh — PR post-review churn for the CodeDelta Action.
+# How much the pull request changed AFTER review started, and over how many reviewed revisions.
 #
 #   "the code when review started" = the commit the FIRST submitted review was made on (GitHub records it per review)
 #   "now"                          = the PR's head commit
